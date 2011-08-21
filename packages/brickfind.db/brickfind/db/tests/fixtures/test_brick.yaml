@@ -1,0 +1,20 @@
+# The data below is downloaded from http://partsregistry.org/Part:BBa_B0034
+name: BBa_B0034
+description: RBS (Elowitz 1999) -- defines RBS efficiency
+type: RBS
+status: available
+results: works
+nickname:
+rating: 1
+url: http://partsregistry.org/Part:BBa_B0034
+publish_at: 2003-01-31
+author: Vinay S Mahajan, Voichita D. Marinescu, Brian Chow, Alexander      D Wissner-Gross and Peter Carr IAP, 2003. 
+quality: confirmed
+categories:
+  - chassis/prokaryote/ecoli
+  - direction/forward
+  - function/coliroid
+  - rbs/prokaryote/constitutive/community
+  - regulation/constitutive
+  - ribosome/prokaryote/ecoli
+    

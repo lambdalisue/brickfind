@@ -35,7 +35,7 @@ def test_parse():
         type="RBS",
         status="available",
         results="works",
-        nickname="",
+        nickname=None,
         rating=1,
         url="http://partsregistry.org/Part:BBa_B0034",
         publish_at=datetime.strptime("2003-01-31", "%Y-%m-%d"),
@@ -43,17 +43,25 @@ def test_parse():
             "Alexander      D Wissner-Gross and Peter Carr IAP, 2003.",
         quality="confirmed",
         sequences=(
-            "aaagaggagaaa",
-            ),
+            dict(
+                sequence="aaagaggagaaa",
+            ),),
         features=(
             dict(
-                title="",
+                title=None,
                 type="conserved",
                 direction="forward",
                 startpos=5,
                 endpos=8,
-                ),
-            ),
+            ),),
+        categories=(
+                'chassis/prokaryote/ecoli',
+                'direction/forward',
+                'function/coliroid',
+                'rbs/prokaryote/constitutive/community',
+                'regulation/constitutive',
+                'ribosome/prokaryote/ecoli',
+            )
         )
     def _check(entry, key, value):
         if isinstance(value, dict):
@@ -61,8 +69,8 @@ def test_parse():
                 _check(entry[key], subkey, subvalue)
         else:
             eq_(entry[key], value)
-    xml = open(os.path.join(os.path.dirname(__file__), r"BBa_B0034.xml"))
-    res = parse(xml)
-    entry = res[0]
+    url = os.path.join(os.path.dirname(__file__), r"BBa_B0034.xml")
+    res = parse(url)
+    entry = res.next()
     for key, value in EXPECTED.iteritems():
         _check(entry, key, value)

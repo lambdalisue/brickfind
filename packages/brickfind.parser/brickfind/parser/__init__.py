@@ -33,12 +33,16 @@ from datetime import datetime
 from itertools import islice
 
 def _get_string(x):
-    return x.string.strip() if x.string else ""
+    return x.string.strip() if x.string else None
 def _get_int(x):
     return int(x.string) if x.string else None
 def _get_date(x):
     return datetime.strptime(x.string, "%Y-%m-%d") if x.string else None
 
+def _build_sequence(soup):
+    sequence = {}
+    sequence['sequence'] = _get_string(soup.string)
+    return sequence
 def _build_feature(soup):
     feature = {}
     feature['title'] = _get_string(soup.title)
@@ -62,12 +66,18 @@ def _build_brick(soup):
     brick['quality'] = _get_string(soup.best_quality).lower()
     lst = []
     for sequence in soup.sequences('seq_data'):
-        lst.append(_get_string(sequence))
+        lst.append(_build_sequence(sequence))
     brick['sequences'] = tuple(lst)
     lst = []
     for feature in soup.features('feature'):
         lst.append(_build_feature(feature))
     brick['features'] = tuple(lst)
+    lst = []
+    for category in soup.categories('category'):
+        label = _get_string(category)
+        label = label[2:] if label.startswith('//') else label
+        lst.append(label)
+    brick['categories'] = tuple(lst)
     return brick
 
 def parse(url, size=10):
@@ -83,6 +93,8 @@ def parse(url, size=10):
         >>> import os.path
         >>> ibricks = parse(os.path.join(os.path.dirname(__file__),
         ...     'tests/BBa_B0034.xml'))
+        >>> ibricks # doctest: +ELLIPSIS
+        <generator ...>
         >>> for brick in ibricks:
         ...     brick['name']
         u'BBa_B0034'
