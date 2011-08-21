@@ -33,15 +33,15 @@ def test_parse():
         name="BBa_B0034",
         description="RBS (Elowitz 1999) -- defines RBS efficiency",
         type="RBS",
-        status="available",
-        results="works",
+        status="Available",
+        results="Works",
         nickname=None,
         rating=1,
         url="http://partsregistry.org/Part:BBa_B0034",
         publish_at=datetime.strptime("2003-01-31", "%Y-%m-%d"),
         author="Vinay S Mahajan, Voichita D. Marinescu, Brian Chow, " + \
             "Alexander      D Wissner-Gross and Peter Carr IAP, 2003.",
-        quality="confirmed",
+        quality="Confirmed",
         sequences=(
             dict(
                 sequence="aaagaggagaaa",

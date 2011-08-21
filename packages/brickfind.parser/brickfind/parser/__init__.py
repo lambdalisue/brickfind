@@ -47,7 +47,7 @@ def _build_feature(soup):
     feature = {}
     feature['title'] = _get_string(soup.title)
     feature['type'] = _get_string(soup.type)
-    feature['direction'] = _get_string(soup.direction).lower()
+    feature['direction'] = _get_string(soup.direction)
     feature['startpos'] = _get_int(soup.startpos)
     feature['endpos'] = _get_int(soup.endpos)
     return feature
@@ -57,13 +57,13 @@ def _build_brick(soup):
     brick['nickname'] = _get_string(soup.part_nickname)
     brick['description'] = _get_string(soup.part_short_desc)
     brick['type'] = _get_string(soup.part_type)
-    brick['status'] = _get_string(soup.part_status).lower()
-    brick['results'] = _get_string(soup.part_results).lower()
+    brick['status'] = _get_string(soup.part_status)
+    brick['results'] = _get_string(soup.part_results)
     brick['rating'] = _get_int(soup.part_rating)
     brick['url'] = _get_string(soup.part_url)
     brick['publish_at'] = _get_date(soup.part_entered)
     brick['author'] = _get_string(soup.part_author)
-    brick['quality'] = _get_string(soup.best_quality).lower()
+    brick['quality'] = _get_string(soup.best_quality)
     lst = []
     for sequence in soup.sequences('seq_data'):
         lst.append(_build_sequence(sequence))

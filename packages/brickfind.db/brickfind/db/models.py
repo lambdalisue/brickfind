@@ -49,17 +49,17 @@ class Brick(Base):
     __mapper_args__ = {'extension': AutoTimeRecordExtension()}
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True)
-    nickname = Column(String)
+    name = Column(String(140), unique=True)
+    nickname = Column(String(140))
     description = Column(Text)
-    type = Column(String)
-    status = Column(String)
-    results = Column(String)
+    type = Column(String(20))
+    status = Column(String(20))
+    results = Column(String(20))
     rating = Column(Integer)
-    url = Column(String)
+    url = Column(String(140))
     publish_at = Column(Date)
-    author = Column(String)
-    quality = Column(String)
+    author = Column(String(140))
+    quality = Column(String(20))
     # Automatically update via extension
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
@@ -72,9 +72,9 @@ class Feature(Base):
     __tablename__ = 'features'
 
     id = Column(Integer, primary_key=True)
-    title = Column(String)
-    type = Column(String)
-    direction = Column(String)
+    title = Column(String(140))
+    type = Column(String(20))
+    direction = Column(String(20))
     startpos = Column(Integer)
     endpos = Column(Integer)
 
@@ -102,7 +102,7 @@ class Category(Base):
     __tablename__ = 'categories'
 
     id = Column(Integer, primary_key=True)
-    label = Column(String)
+    label = Column(String(140))
 
     parent_id = Column(Integer, ForeignKey('categories.id'))
     children = relationship("Category", 
