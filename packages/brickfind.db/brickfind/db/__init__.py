@@ -23,9 +23,6 @@ License:
 """
 __AUTHOR__ = "lambdalisue (lambdalisue@hashnote.net)"
 __VERSION__ = "0.1.0"
-import re
-from urllib2 import urlopen
-from datetime import datetime
 from models import Brick, Sequence, Feature, Category
 from models import association_brick_category_table as abc_table
 from brickfind.parser import parse
@@ -103,7 +100,9 @@ def update_brick(data, commit=True, session=None):
             feature = Feature(**fea)
             brick_instance.features.append(feature)
     if categories:
-        for category in categories:
+        for cat in categories:
+            category = Category(**cat)
+
             lowest_category = get_lowest_category(category, session)
             brick_instance.categories.append(lowest_category)
 

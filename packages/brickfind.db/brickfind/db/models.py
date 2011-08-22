@@ -97,6 +97,7 @@ class Sequence(Base):
     def __repr__(self):
         return "<Sequence (%d bp)>" % len(self.sequence)
 
+CATEGORY_DELIMITER = '/'
 class Category(Base):
     """brickfind brick category model class"""
     __tablename__ = 'categories'
@@ -112,6 +113,12 @@ class Category(Base):
             secondary=association_brick_category_table,
             backref='categories')
 
+    def __init__(self, label, parent_id=None):
+        if CATEGORY_DELIMITER in label:
+            pass
+        
+
+
     def __repr__(self):
         return "<Category (%r)>" % self.get_full_label()
     
@@ -124,3 +131,44 @@ class Category(Base):
                 return category.label
         return get_label(self)
 
+def get_or_create_model(model, kwargs, session=None):
+    """get or create model filter by kwargs"""
+    from sessions import session as default_session
+    session = session or default_session
+
+    query = session.query(model).filter_by(**kwargs)
+    instance = query.first()
+
+    if not instance:
+        instance = model(**kwargs)
+        session.add(instance)
+        session.flush()
+
+    return instance
+
+def get_deepest_category(path, session=None):
+    """get deepest category instance from category path like "//parent/child"""
+    from sessions import session as default_session
+    session = session or default_session
+    
+    def _get_deepest_category(path, session, parent_id=None):
+        if CATEGORY_DELIMITER in path:
+            lhs, rhs = path.split(CATEGORY_DELIMITER, 1)
+            filter_dict = {
+                'label': lhs,
+                'parent_id': parent_id
+            }
+            parent = get_or_create_model(
+                    Category, filter_dict, session)
+            return _get_deepest_category(rhs, session, parent.id)
+        else:
+            filter_dict = {
+                'label': path,
+                'parent_id': parent_id
+            }
+            return get_or_create_model(
+                    Category, filter_dict, session)
+
+    # Truncate first 2 letters (//)
+    path = path[2:]
+    return _get_deepest_category(path, session, None)

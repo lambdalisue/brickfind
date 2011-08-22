@@ -29,6 +29,8 @@ setup(name='brickfind.parser',
       install_requires=[
           'setuptools',
           # -*- Extra requirements: -*-
+          'BeautifulSoup',
+          'lxml',
       ],
       entry_points="""
       # -*- Entry points: -*-

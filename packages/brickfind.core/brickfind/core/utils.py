@@ -26,7 +26,12 @@ __VERSION__ = "0.1.0"
 from lxml import etree
 from brickfind.db import fetch_brick
 
-def update_db(xmlurl):
+BRICK_XML_URL_PATTERN = r"http://partsregistry.org/cgi/xml/part.cgi?part=%s"
+def get_brick_xml_url(name):
+    """get BioBrick xml formatted information url by name like BBa_B0036"""
+    return BRICK_XML_URL_PATTERN % name
+    
+def update_db(xmlurl, session):
     """update db via xml file"""
     URL_PATTERN = r"http://partsregistry.org/cgi/xml/part.cgi?part=%s"
     context = etree.iterparse(xmlurl, events=('end',), tag='SEGMENT')
@@ -39,9 +44,13 @@ def update_db(xmlurl):
         urls.append(url)
     size = len(urls)
     print "Download %d brick informations..." % size
-    for i, url in enumerate(urls[:10]):
-        brick = fetch_brick(url).next()
-        print "%s information has downloaded (%d/%d)" % (brick, i+1, size)
+    from brickfind.db.sessions import session
+    for i, url in enumerate(urls):
+        fetch_brick(url, commit=False, session=session).next()
+        if (i+1) % 10 == 0:
+            session.commit()
+            print "%d information has downloaded (%d/%d)" % (i+1, i+1, size)
+    session.commit()
 
 def main():
     """for speed test
