@@ -24,15 +24,42 @@ License:
 __AUTHOR__ = "lambdalisue (lambdalisue@hashnote.net)"
 __VERSION__ = "0.1.0"
 from nose.tools import *
+from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
 from ..utils import get_or_create_model
-from ..sessions import create_session
 
+Base = declarative_base()
+engine = create_engine('sqlite://')
+
+class Hoge(Base):
+    __tablename__ = 'hoges'
+    id = Column(Integer, primary_key=True)
+    foobar = Column(String(20))
+
+metadata = None
+session = None
 def setup():
-    create_session('sqlite://')
+    global metadata
+    metadata = Base.metadata
+    metadata.create_all(engine)
+    Session = sessionmaker(bind=engine, autoflush=True, autocommit=False)
+    global session
+    session = Session()
+
+def teardown():
+    metadata.drop_all(engine)
 
 def test_get_or_create_model():
-    from ..models import Sequence
+    new, created = get_or_create_model(Hoge, {'foobar': 'hogehoge'}, session)
+    eq_(created, True)
     
+    session.add(new)
+    session.flush()
+
+    mod, created = get_or_create_model(Hoge, {'foobar': 'hogehoge'}, session)
+    eq_(created, False)
+
 
 if __name__ == '__main__':
     import nose

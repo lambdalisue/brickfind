@@ -1,6 +1,6 @@
 # vim: set fileencoding=utf8:
 """
-brickfind.db session module
+SQLAlchemy mapping extensions
 
 AUTHOR:
     lambdalisue[Ali su ae] (lambdalisue@hashnote.net)
@@ -23,26 +23,3 @@ License:
 """
 __AUTHOR__ = "lambdalisue (lambdalisue@hashnote.net)"
 __VERSION__ = "0.1.0"
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session
-
-from models import Base
-
-metadata = Base.metadata
-session = None
-
-def create_session(uri, global_=True):
-    """Creates a session.
-
-    If `global` is True creates a global session variable."""
-
-    engine = create_engine(uri)
-    metadata.create_all(engine)
-    Session = scoped_session(sessionmaker(bind=engine, autoflush=True,
-        autocommit=False))
-    if global_:
-        global session
-        session = Session()
-        return session
-    else:
-        return Session()
