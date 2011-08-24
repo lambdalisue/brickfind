@@ -42,7 +42,7 @@ def uriopen(uri):
         method = open
     return method(uri)
 
-def lazystrip(x):
+def lazystr(x):
     """call strip() function of instance if x is string"""
     x = x.string if hasattr(x, 'string') else x
     if isinstance(x, basestring):
@@ -51,7 +51,7 @@ def lazystrip(x):
     return x
 def lazyint(x):
     """try to convert x to int"""
-    x = lazystrip(x)
+    x = lazystr(x)
     try:
         return int(x)
     except:
@@ -61,7 +61,7 @@ def lazyint(x):
 DATE_FORMAT="%Y-%m-%d"
 def lazydate(x):
     """try to convert x to date"""
-    x = lazystrip(x)
+    x = lazystr(x)
     if isinstance(x, basestring):
         return datetime.strptime(x, DATE_FORMAT)
     return x
@@ -120,34 +120,34 @@ def parse(uri, size=None):
         # Create sequence list
         sequence_list = []
         for sequence in brick.sequences('seq_data'):
-            sequence_list.append(lazystrip(sequence))
+            sequence_list.append(lazystr(sequence))
         # Create feature list
         feature_list = []
         for feature in brick.features('feature'):
             feature_list.append({
-                'title': lazystrip(feature.title),
-                'type': lazystrip(feature.type),
-                'direction': lazystrip(feature.direction),
+                'title': lazystr(feature.title),
+                'type': lazystr(feature.type),
+                'direction': lazystr(feature.direction),
                 'startpos': lazyint(feature.startpos),
                 'endpos': lazyint(feature.endpos),
             })
         # Create category list
         category_list = []
         for category in brick.categories('category'):
-            category_list.append(lazystrip(category))
+            category_list.append(lazystr(category))
         # Create brick
         brick_info = Attrdict({
-            'name': lazystrip(brick.part_name),
-            'nickname': lazystrip(brick.part_nickname),
-            'description': lazystrip(brick.part_short_desc),
-            'type': lazystrip(brick.part_type),
-            'status': lazystrip(brick.part_status),
-            'results': lazystrip(brick.part_results),
+            'name': lazystr(brick.part_name),
+            'nickname': lazystr(brick.part_nickname),
+            'description': lazystr(brick.part_short_desc),
+            'type': lazystr(brick.part_type),
+            'status': lazystr(brick.part_status),
+            'results': lazystr(brick.part_results),
             'rating': lazyint(brick.part_rating),
-            'url': lazystrip(brick.part_url),
+            'url': lazystr(brick.part_url),
             'publish_at': lazydate(brick.part_entered),
-            'author': lazystrip(brick.part_author),
-            'quality': lazystrip(brick.best_quality),
+            'author': lazystr(brick.part_author),
+            'quality': lazystr(brick.best_quality),
             'sequences': tuple(sequence_list),
             'features': tuple(feature_list),
             'categories': tuple(category_list),

@@ -23,20 +23,16 @@ License:
 """
 __AUTHOR__ = "lambdalisue (lambdalisue@hashnote.net)"
 __VERSION__ = "0.1.0"
-import os.path
-from nose.tools import eq_
-from ..biodas import parse, create_entry_point
+from nose.tools import *
+from ..utils import get_or_create_model
+from ..sessions import create_session
 
-def test_parse():
-    uri = os.path.join(
-            os.path.dirname(__file__),
-            'biodas_entry_points.xml')
-    entry_points = parse(uri, size=3)
-    eq_(len(entry_points), 3)
+def setup():
+    create_session('sqlite://')
 
-    eq_(entry_points[0], create_entry_point('BBa_R0050'))
-    eq_(entry_points[1], create_entry_point('BBa_R0011'))
-    eq_(entry_points[2], create_entry_point('BBa_R0040'))
+def test_get_or_create_model():
+    from ..models import Sequence
+    
 
 if __name__ == '__main__':
     import nose

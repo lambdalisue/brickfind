@@ -36,6 +36,10 @@ def fastiter(context, fn):
     del context
 
 PARTSREGISTRY_URL_PATTERN = r"http://partsregistry.org/cgi/xml/part.cgi?part=%s"
+def create_entry_point(name):
+    url = PARTSREGISTRY_URL_PATTERN%name
+    return (name, url)
+
 def parse(uri, size=None):
     """parse biodas entry points xml"""
     context = etree.iterparse(uri, events=('end',), tag='SEGMENT')
@@ -45,8 +49,7 @@ def parse(uri, size=None):
     entry_points = []
     def fn(e):
         name = e.text.encode('utf-8')
-        url = PARTSREGISTRY_URL_PATTERN % name
-        entry_points.append(name, url)
+        entry_points.append(create_entry_point(name))
 
     # execute
     fastiter(context, fn)

@@ -27,8 +27,8 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, String, Text, Date, DateTime
 from sqlalchemy import ForeignKey, Table
 from sqlalchemy.orm import relationship, backref
-from sqlalchemy.orm.interfaces import MapperExtension
 from sqlalchemy.ext.declarative import declarative_base
+from utils import get_or_create_model
 
 Base = declarative_base()
 
@@ -89,7 +89,7 @@ class Sequence(Base):
     __tablename__ = 'sequences'
 
     id = Column(Integer, primary_key=True)
-    sequence = Column(Text)
+    data = Column(Text)
 
     brick_id = Column(Integer, ForeignKey('bricks.id'))
     brick = relationship("Brick", backref=backref('sequences', order_by=id))
@@ -131,21 +131,6 @@ class Category(Base):
                 return category.label
         return get_label(self)
 
-def get_or_create_model(model, kwargs, session=None):
-    """get or create model filter by kwargs"""
-    from sessions import session as default_session
-    session = session or default_session
-
-    query = session.query(model).filter_by(**kwargs)
-    instance = query.first()
-
-    if not instance:
-        instance = model(**kwargs)
-        session.add(instance)
-        session.flush()
-
-    return instance
-
 def get_deepest_category(path, session=None):
     """get deepest category instance from category path like "//parent/child"""
     from sessions import session as default_session
@@ -158,8 +143,11 @@ def get_deepest_category(path, session=None):
                 'label': lhs,
                 'parent_id': parent_id
             }
-            parent = get_or_create_model(
+            parent, created = get_or_create_model(
                     Category, filter_dict, session)
+            if created:
+                session.add(parent)
+                session.flush()
             return _get_deepest_category(rhs, session, parent.id)
         else:
             filter_dict = {

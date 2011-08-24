@@ -25,28 +25,8 @@ __AUTHOR__ = "lambdalisue (lambdalisue@hashnote.net)"
 __VERSION__ = "0.1.0"
 from models import Brick, Sequence, Feature, Category
 from models import association_brick_category_table as abc_table
+from models import get_deepest_category
 from brickfind.parser import parse
-
-def get_lowest_category(category, session, parent_id=None):
-    def _get_or_create_category(label):
-        category_query = session.query(Category).filter_by(label=label,
-                parent_id=parent_id)
-        category_instance = category_query.first()
-
-        if not category_instance:
-            category_instance = Category(label=label, parent_id=parent_id)
-            session.add(category_instance)
-            session.flush()
-
-        return category_instance
-
-    DELIMITER = '/'
-    if DELIMITER in category:
-        lhs, rhs = category.split(DELIMITER, 1)
-        category_instance = _get_or_create_category(lhs)
-        return get_lowest_category(rhs, session, category_instance.id)
-    else:
-        return _get_or_create_category(category)
 
 def update_brick(data, commit=True, session=None):
     """create or update brick via data on to db"""
@@ -93,7 +73,7 @@ def update_brick(data, commit=True, session=None):
     # Add sequences and features
     if sequences:
         for seq in sequences:
-            sequence = Sequence(**seq)
+            sequence = Sequence(sequence=seq)
             brick_instance.sequences.append(sequence)
     if features:
         for fea in features:
@@ -101,10 +81,8 @@ def update_brick(data, commit=True, session=None):
             brick_instance.features.append(feature)
     if categories:
         for cat in categories:
-            category = Category(**cat)
-
-            lowest_category = get_lowest_category(category, session)
-            brick_instance.categories.append(lowest_category)
+            category = get_deepest_category(label=cat, session=session)
+            brick_instance.categories.append(category)
 
     # Add and commit
     if brick_instance.id is None:
@@ -121,9 +99,12 @@ def fetch_brick(url, commit=True, session=None):
     if session is None:
         session = default_session
 
-    datas = parse(url)
-    for data in datas:
-        yield update_brick(data, commit, session)
+    brick_infos = parse(url)
+    brick_instances = []
+    for data in brick_infos:
+        brick_instances.append(update_brick(data, commit, session))
+
+    return brick_instances
 
 
 

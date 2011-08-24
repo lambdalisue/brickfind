@@ -1,6 +1,6 @@
 # vim: set fileencoding=utf8:
 """
-Unittest module of ...
+short module explanation
 
 AUTHOR:
     lambdalisue[Ali su ae] (lambdalisue@hashnote.net)
@@ -23,21 +23,16 @@ License:
 """
 __AUTHOR__ = "lambdalisue (lambdalisue@hashnote.net)"
 __VERSION__ = "0.1.0"
-import os.path
-from nose.tools import eq_
-from ..biodas import parse, create_entry_point
 
-def test_parse():
-    uri = os.path.join(
-            os.path.dirname(__file__),
-            'biodas_entry_points.xml')
-    entry_points = parse(uri, size=3)
-    eq_(len(entry_points), 3)
+def get_or_create_model(model, kwargs, session=None):
+    """get or create model filter by kwargs"""
+    from sessions import session as default_session
+    session = session or default_session
 
-    eq_(entry_points[0], create_entry_point('BBa_R0050'))
-    eq_(entry_points[1], create_entry_point('BBa_R0011'))
-    eq_(entry_points[2], create_entry_point('BBa_R0040'))
+    query = session.query(model).filter_by(**kwargs)
+    instance = query.first()
 
-if __name__ == '__main__':
-    import nose
-    nose.main()
+    if not instance:
+        instance = model(**kwargs)
+
+    return instance, instance.id == None
